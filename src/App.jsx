@@ -1,203 +1,136 @@
-import { useState } from "react";
-import React from "react";
-import "./App.css";
+import React, { useState, useEffect } from 'react';
+import Select from 'react-select';
+import './App.css';
+//Uzylem gemini do naprawienia błędów w kodzie + sprawdzenie jak obliczyc cene
 
-function Owoce() {
-  const [owoce, setOwoce] = useState([
-    {
-      id: 1,
-      typ: "gruszka",
-      odmiana: "Pospolita",
-      grafika: "Pospolita.jpeg",
-      opis: "Najczęściej występująca gruszka w Polsce",
-      sztuk: 21,
-      cena: 7.55,
-    },
-    {
-      id: 2,
-      typ: "gruszka",
-      odmiana: "Radana",
-      grafika: "Radana.jpg",
-      opis: "Odmiana uprawna(kultywar) gruszy nalezaca do grupy grusz zachodnich otrzymywanych w Czechach",
-      sztuk: 12,
-      cena: 6.5,
-    },
-    {
-      id: 3,
-      typ: "gruszka",
-      odmiana: "Concorde",
-      grafika: "Concorde.jpg",
-      opis: "Grusza 'Concorde' to jesienna, angielska odmiana gruszy (Pyrus communis) wyhodowana w 1977 roku",
-      sztuk: 15,
-      cena: 9.5,
-    },
-    {
-      id: 4,
-      typ: "jablko",
-      odmiana: "Gala",
-      grafika: "Gala.jpg",
-      opis: "Odmiana jabłka często spotikana na baziarach",
-      sztuk: 9,
-      cena: 4.30,
-    },
-    {
-      id: 5,
-      typ: "jablko",
-      odmiana: "Jonagold",
-      grafika: "Jonagold.jpg",
-      opis: "Jabłoń Jonagold to popularna odmiana jabłoni domowej pochodząca ze Stanów Zjednoczonych",
-      sztuk: 33,
-      cena: 4.70,
-    },
-    {
-      id: 6,
-      typ: "jablko",
-      odmiana: "Antonowka",
-      grafika: "Antonowka.jpg",
-      opis: "Jabłoń Antonówka to bardzo stara odmiana jabłoni domowej pochodząca z Rosji, prawdopodobnie z byłej guberni kurskiej",
-      sztuk: 56,
-      cena: 2.70,
-    },
-    {
-      id: 7,
-      typ: "sliwka",
-      odmiana: "Kalifornijska",
-      grafika: "Kalifornijska.jpg",
-      opis: "Śliwa kalifornijska 'Petit d’Agen' – odmiana uprawna śliwy domowej.",
-      sztuk: 90,
-      cena: 5.70,
-    },
-    {
-      id: 7,
-      typ: "jablko",
-      odmiana: "Ligol",
-      grafika: "Ligol.jpg",
-      opis: "Jabłko Ligol to polska odmiana jabłoni wyhodowana w 1972 roku w Instytucie Sadownictwa i Kwiaciarstwa w Skierniewicach poprzez skrzyżowanie odmian Golden Delicious i Linda.",
-      sztuk: 11,
-      cena: 2.20,
-    },
-    {
-      id: 8,
-      typ: "sliwka",
-      odmiana: "Domowa",
-      grafika: "Domowa.jpg",
-      opis: "Rodzaj Prunus zaliczany jest tradycyjnie do podrodziny Amygdaloideae (= Prunoideae) w obrębie rodziny różowatych. Podrodzina ta obejmuje obok śliwy jeszcze trzy rodzaje, które wyróżniają się także owocem w postaci pestkowca z pojedynczą twardą pestką otoczoną mięsistą owocnią – Maddenia Hook. f. & Thomson, Oemleria Reichb. i Prinsepia Royle.",
-      sztuk: 18,
-      cena: 9.20,
-    },
+const CENA_BAZOWA = 75000;
+const CENA_FELGI_ALU = 7000;
+const CENA_CZUJNIKI = 6500;
+const CENA_CLIMATRONIC = 8500;
+const CENA_NAWIGACJA = 5000;
+
+
+const OPCJE_KOLOROW = [
+    { value: 'szary', label: 'Szary' },
+    { value: 'czerwony', label: 'Czerwony' },
+    { value: 'zielony', label: 'Zielony' },
+    { value: 'zolty', label: 'Żółty' },
+    { value: 'granatowy', label: 'Granatowy'} 
+];
+
+
+const dajObrazekKoloru = (kolor) => {
+    if (kolor === 'szary') return "https://i.ibb.co/0VWDWwh1/szary.png";
+    if (kolor === 'czerwony') return "https://i.ibb.co/QjFQ3q7s/czerwony.png";
     
-  ]);
-
-  const [filtry, setFiltry] = useState({
-    gruszka: true,
-    jablko: true,
-    sliwka: true,
-  });
-
-  const [koszyk, setKoszyk] = useState({});
-
-  const handleFilterChange = (e) => {
-    const { name, checked } = e.target;
-    setFiltry((prev) => ({
-      ...prev,
-      [name]: checked,
-    }));
-  };
-
-  const handleAddToCart = (owoc) => {
-    if (owoc.sztuk <= 0) return alert("Brak owoców na stanie!");
-
-    setOwoce((prev) =>
-      prev.map((item) =>
-        item.id === owoc.id ? { ...item, sztuk: item.sztuk - 1 } : item,
-      ),
-    );
-
-    setKoszyk((prev) => ({
-      ...prev,
-      [owoc.id]: (prev[owoc.id] || 0) + 1,
-    }));
-  };
-
-  const handleShowCart = () => {
-    const wynik = Object.entries(koszyk).map(([id, sztuk]) => ({
-      id: Number(id),
-      sztuk,
-    }));
-    console.log("Zawartość koszyka:", wynik);
-  };
-
-  const przeFiltrowane = owoce.filter((owoc) => filtry[owoc.typ]);
-
-  return (
-    <div className="container mt-4">
-      <h1 className="text-center">Owoce</h1>
-
-      <div className="mb-4 text-center">
-        <label className="me-3">
-          <input
-            type="checkbox"
-            name="gruszka"
-            checked={filtry.gruszka}
-            onChange={handleFilterChange}
-          />
-          Gruszka
-        </label>
-        <label className="me-3">
-          <input
-            type="checkbox"
-            name="jablko"
-            checked={filtry.jablko}
-            onChange={handleFilterChange}
-          />
-          Jablko
-        </label>
-        <label className="me-3">
-          <input
-            type="checkbox"
-            name="sliwka"
-            checked={filtry.sliwka}
-            onChange={handleFilterChange}
-          />
-          Sliwka
-        </label>
-      </div>
-
-      <div className="row">
-        {przeFiltrowane.map((owoc) => (
-          <div key={owoc.id} className="col-md-4 mb-4">
-            <div className="card h-100">
-              <img src={owoc.grafika} alt={owoc.typ} className="card-img-top" />
-              <div className="card-body">
-                <h5 className="card-title">
-                  {owoc.typ} - {owoc.odmiana}
-                </h5>
-                <p className="card-text">{owoc.opis}</p>
-                <p>
-                  <strong>Cena:</strong> {owoc.cena.toFixed(2)} PLN
-                </p>
-                <p>
-                  <strong>Sztuk:</strong> {owoc.sztuk}
-                </p>
-                <button
-                  className="btn btn-primary"
-                  onClick={() => handleAddToCart(owoc)}
-                >
-                  Dodaj do koszyka
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="text-center mt-4">
-        <button className="btn btn-success" onClick={handleShowCart}>
-          Pokaż koszyk
-        </button>
-      </div>
-    </div>
-  );
+    if (kolor === 'zielony') return "https://i.ibb.co/dXTFb34/zielony.png";
+    if (kolor === 'zolty') return "https://i.ibb.co/4RvG6RYV/zolty.png";
+    if (kolor === 'granatowy') return "https://i.ibb.co/35CRzWrM/granatowy.png";
+    return "https://i.ibb.co/396BnZ1h/czerwony.png"; 
 }
 
-export default Owoce;
+export default function App() {
+ 
+    const [wybranyKolor, ustawKolor] = useState(OPCJE_KOLOROW[1]); 
+    const [maFelgiAlu, ustawFelgiAlu] = useState(false); 
+    const [maCzujniki, ustawCzujniki] = useState(false);
+    const [maClimatronic, ustawClimatronic] = useState(false); 
+    const [maNawigacje, ustawNawigacje] = useState(false); 
+    const [cenaCalkowita, ustawCene] = useState(CENA_BAZOWA); 
+
+
+    useEffect(() => {
+        let nowaCena = CENA_BAZOWA;
+
+       
+        if (maFelgiAlu) {
+            nowaCena = nowaCena + CENA_FELGI_ALU;
+        }
+
+        
+        if (maCzujniki) {
+            nowaCena = nowaCena + CENA_CZUJNIKI;
+        }
+
+        
+        if (maClimatronic) {
+            nowaCena = nowaCena + CENA_CLIMATRONIC;
+        }
+
+       
+        if (maNawigacje) {
+            nowaCena = nowaCena + CENA_NAWIGACJA;
+        }
+
+        ustawCene(nowaCena); 
+    }, [maFelgiAlu, maCzujniki, maClimatronic, maNawigacje]); 
+
+    const aktualnyURL = dajObrazekKoloru(wybranyKolor.value);
+
+    return (
+        <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
+
+           
+            <div style={{ textAlign: 'center' }}>
+                <img src={aktualnyURL} alt="Samochód" style={{ width: '100%', maxWidth: '300px' }} />
+                <h3 style={{ backgroundColor:'#1B5E20', color: 'white', padding: '10px' }}>Konfigurator</h3>
+                <p>Wybrany kolor:</p>
+            </div>
+
+            <hr />
+
+            
+            <label style={{ color: '#1B5E20' }}>Wybierz kolor:</label>
+            <Select 
+                options={OPCJE_KOLOROW}
+                value={wybranyKolor}
+                onChange={(opcja) => ustawKolor(opcja)} 
+            />
+
+            <hr />
+
+           
+            <label style={{ color: '#1B5E20' }}>Felgi</label>
+            <div style={{ padding: '10px', backgroundColor: '#E8F5E9' }}>
+                <input 
+                    type="radio" name="felgi" 
+                    checked={!maFelgiAlu} 
+                    onChange={() => ustawFelgiAlu(false)}
+                /> Stalowe
+
+                <input 
+                    type="radio" name="felgi" 
+                    checked={maFelgiAlu} 
+                    onChange={() => ustawFelgiAlu(true)}
+                    style={{ marginLeft: '15px' }}
+                /> Aluminiowe (+{CENA_FELGI_ALU} PLN)
+            </div>
+
+            <hr />
+
+           
+            <label style={{ color: '#1B5E20' }}>Wyposażenie</label>
+
+            <div>
+                <input type="checkbox" checked={maCzujniki} onChange={(e) => ustawCzujniki(e.target.checked)} />
+                <label>Czujniki parkowania </label>  
+            </div>
+            <div>
+                <input type="checkbox" checked={maClimatronic} onChange={(e) => ustawClimatronic(e.target.checked)} />
+                <label>Climatronic </label>
+            </div>
+            <div>
+                <input type="checkbox" checked={maNawigacje} onChange={(e) => ustawNawigacje(e.target.checked)} />
+                <label>Nawigacja </label>
+            </div>
+
+            <hr />
+
+         
+            <div>
+                <p style={{ margin: '0 0 5px 0' }}>Cena bazowa: **{CENA_BAZOWA} PLN**</p>
+                <h2 style={{ margin: '0' }}>Razem: **{cenaCalkowita} PLN**</h2>
+            </div>
+        </div>
+    );
+}

@@ -1,0 +1,41 @@
+*{
+  padding: 10px;
+  background-color:#E8F5E9;
+}
+.posterUrl
+{
+  height: 150px;
+}
+.kolor
+{
+  font-size: 20px;
+  color: #5D9B5D;
+  text-align: center;
+  margin: 5px;
+}
+.posterUrl
+{
+  height: 150px;
+}
+.title
+{
+  color: white;
+  text-align: center;
+  font-size: 25px;
+  background-color: #1B5E20;
+  padding: 5px;
+}
+.CEna
+{
+  font-size: 18px;
+  color: #5D9B5D;
+  text-align: center;
+  margin: 5px;
+  font-weight: bold;
+  text-align: right;
+}
+.felgi
+{
+  background-color: #9AEB9A;
+  
+}
